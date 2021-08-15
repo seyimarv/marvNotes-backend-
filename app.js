@@ -2,11 +2,14 @@ const express = require('express'); //import express
 
 const path = require('path')
 
+const User = require('./models/user')
 const bodyParser = require('body-parser')  //import body-parser
 
 const mongoose = require('mongoose') //importing mongoose
 
 const authRoutes = require('./routes/auth')  //needed to register the route
+
+const noteRoutes = require('./routes/notes')  //needed to register the route
 
 const app = express(); //create the express app.
 
@@ -21,6 +24,7 @@ app.use((req, res, next) => {
 
 
 app.use('/auth', authRoutes) // /auth is added to filter requests that start with 'auth'
+app.use('/note', noteRoutes)
 
 
 app.use((error, req, next) => {

@@ -69,7 +69,7 @@ exports.login = async (req, res, next) => {
               userId: user._id.toString()
             },
             'somesupersecretsecret',
-            { expiresIn: '10h' }
+            { expiresIn: '1h' }
           );
          console.log(loadedUser) 
       res.status(200).json({ token: token, userId: loadedUser._id.toString(), userName: loadedUser._doc.name });
