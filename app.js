@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-type, Authorization, Privacy');
     next();
 });  //used to solve the Cors Error to allow client(frontend) and server(backend) run on different domains
 
@@ -38,8 +38,12 @@ app.use((error, req, next) => {
 
 mongoose.connect('mongodb+srv://Marvelous:Tomilayo1@cluster0.yopfs.mongodb.net/notesapp')
 .then(result => {
-    console.log('connected')
-   app.listen(8081)
+    const server = app.listen(8081)
+    const io = require('./socket').init(server
+    ); //setting up socket.io conection
+    io.on('connection', socket => {
+        console.log('Client connected')
+    });
 }).catch(err => {
     console.log(err)
 })//establish a mongoose connection

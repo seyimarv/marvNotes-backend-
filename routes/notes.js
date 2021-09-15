@@ -10,19 +10,19 @@ const noteController = require('../controllers/notes')
 
 const router = express.Router();
 
-router.get('/notes', isAuth, noteController.getNotes)
+router.get('/note', isAuth, noteController.getNotes)
 
 router.get("/note/:noteId", isAuth, noteController.getNote)
 
 router.post('/note',isAuth,noteController.createNote)
 
-router.put('/note',isAuth, noteController.updateNote)
+router.put('/note/:noteId',isAuth, noteController.updateNote)
 
 router.delete('/note/:noteId',isAuth, noteController.deleteNote)
 
-router.post('/like-note/:noteId', isAuth, noteController.likeNote)
+router.post('/note/:noteId', isAuth, noteController.likeNote)
 
-router.post('/unlike-note/:noteId',isAuth, noteController.unLikeNote)
+// router.post('/unlike-note/:noteId',isAuth, noteController.unLikeNote)
 
 
 
