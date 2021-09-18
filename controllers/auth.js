@@ -6,6 +6,18 @@ const jwt = require('jsonwebtoken')
 
 const bcrypt = require('bcryptjs')
 
+const nodemailer = require("nodemailer");
+
+
+
+const transporter = nodemailer.createTransport({
+    service: 'hotmail',
+    auth: {
+      user: "seyimarv09@outlook.com",
+      pass: "Tomilayo1!"
+    }
+  }) //for sending emails
+
 
 
 exports.signup = (req, res, next) => {
@@ -83,11 +95,56 @@ exports.login = async (req, res, next) => {
     }
 }
 
+exports.forgotPassword = async (req, res, next) => {
+    const email = req.body.email
+    console.log(email)
+    try {
+        const user = await User.findOne({email: email})
+        loadedUser = user
+        if (!user) {
+            const error = new Error('User email doesnt exist')
+            error.statusCode = 401
+            throw error
+        }
+        const token = jwt.sign(
+            {
+              email: user.email,
+              userId: user._id.toString()
+            },
+            'somesupersecretsecret',
+            { expiresIn: '24h' }
+          );
+          user.resetToken = token;
+          user.resetTokenExpiration = Date.now() + 3600000;
+          const result = await user.save()
+          transporter.sendMail({
+            to: email,
+            from: "seyimarv09@outlook.com",
+            subject: "Reset password",
+            html: `
+            <p>You requested a password reset</p>
+            <p>click this <a href="http://localhost:3000/reset/${token}">Link</a> to set a new password. </p>
+            `
+          }) //sends the reset password email to the user
+          res.status(200).json({ message: 'reset password email sent!', user: result });
+    } catch (err) {
+        console.log(err)
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err)
+    }
+    
+
+}
+
 exports.resetPassword = async (req, res, next) => {
     const errors = validationResult(req);
-    const email = req.body.email
     const password = req.body.password
-
+    const token = req.params.token
+    const userId = req.userId
+    
+   
     if(!errors.isEmpty()) {
         const error = new Error('Validation failed');
         error.statusCode = 422;
@@ -96,9 +153,11 @@ exports.resetPassword = async (req, res, next) => {
     }
    let resetUser;
     try {
-        const user = await User.findOne({email: email})
+        const user = await  User.findOne(
+            {resetToken: token, _id:userId}
+          )
         if (!user) {
-            const error = new Error('User email doesnt exist')
+            const error = new Error('User doesnt exist')
             error.statusCode = 401
             throw error
         }

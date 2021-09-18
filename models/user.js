@@ -21,6 +21,8 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Note' //store reference to the Post model
     }],
+    resetToken: String, //needed to reset password in case user forget password
+    resetTokenExpiration: Date,
     favorites: [{
         type: Schema.Types.ObjectId,
         ref: 'Note'

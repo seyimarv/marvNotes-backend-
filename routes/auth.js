@@ -4,7 +4,8 @@ const { body } = require('express-validator/check') //for validation
 
 const User = require('../models/user')
 
-const authController = require('../controllers/auth')
+const authController = require('../controllers/auth');
+const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
@@ -23,6 +24,8 @@ router.put('/signup', [
 ], authController.signup)
 
 router.post('/login', authController.login)
-router.put('/reset-password', [body('password').trim().isLength({min: 6}) ],
+router.put('/forgot-password',
+ authController.forgotPassword)
+ router.put('/reset-password/:token', isAuth,
  authController.resetPassword)
 module.exports = router
